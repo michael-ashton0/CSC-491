@@ -6,9 +6,11 @@ public class GameManager : MonoBehaviour
 {
     // Booooom singleton
     public static GameManager Instance;
-    private GameObject gameOver;
+    public GameObject gameOver;
+    public GameObject Pause;
+    public GameObject Resume;
 
-    [FormerlySerializedAs("IsGameOver")] public bool isGameOver;
+    public bool isGameOver;
 
     private void Awake()
     {
@@ -40,5 +42,19 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); //Scenemanager doing a lot of heavy lifting
+    }
+
+    public void PauseGame()
+    {
+        Pause.SetActive(false);
+        Resume.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void ResumeGame()
+    {
+        Resume.SetActive(false);
+        Pause.SetActive(true);
+        Time.timeScale = 1f;
     }
 }
