@@ -41,6 +41,8 @@ public class Obstacle : MonoBehaviour
             {
                 score++;
                 pipeScored[pipe] = true;
+                int noise = Random.Range(1, 4);
+                FindFirstObjectByType<FlappyAudio>().Play("Score" + noise);
             }
         }
         scoreText.text = score.ToString();

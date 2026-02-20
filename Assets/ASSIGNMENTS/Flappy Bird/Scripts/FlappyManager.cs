@@ -28,11 +28,15 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         gameOver.SetActive(false);
+        FindFirstObjectByType<FlappyAudio>().Play("Input");
     }
     
     public void GameOver()
     {
         if (isGameOver) return;
+        
+        FindFirstObjectByType<FlappyAudio>().Play("Death");
+        
         isGameOver = true;
         gameOver.SetActive(true);
         Time.timeScale = 0f;
@@ -42,6 +46,7 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); //Scenemanager doing a lot of heavy lifting
+        FindFirstObjectByType<FlappyAudio>().Play("Input");
     }
 
     public void PauseGame()
@@ -49,6 +54,7 @@ public class GameManager : MonoBehaviour
         Pause.SetActive(false);
         Resume.SetActive(true);
         Time.timeScale = 0f;
+        FindFirstObjectByType<FlappyAudio>().Play("Input");
     }
 
     public void ResumeGame()
@@ -56,5 +62,6 @@ public class GameManager : MonoBehaviour
         Resume.SetActive(false);
         Pause.SetActive(true);
         Time.timeScale = 1f;
+        FindFirstObjectByType<FlappyAudio>().Play("Input");
     }
 }

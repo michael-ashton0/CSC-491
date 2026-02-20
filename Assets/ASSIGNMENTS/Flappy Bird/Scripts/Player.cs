@@ -26,6 +26,8 @@ public class Player : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * velocity, ForceMode2D.Impulse);
+            int noise = Random.Range(1, 4);
+            FindFirstObjectByType<FlappyAudio>().Play("Jump" + noise);
         }
     }
     
