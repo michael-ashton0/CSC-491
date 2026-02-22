@@ -8,12 +8,12 @@ public class Obstacle : MonoBehaviour
     public TextMeshProUGUI scoreText;
     private Dictionary<GameObject, bool> pipeScored = new Dictionary<GameObject, bool>();
     public float speed = 3f;
-    public int score = 0;
+
+    public int highScore;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         GameObject[] pipes = GameObject.FindGameObjectsWithTag("Obstacle");
-        scoreText = GameObject.Find("Score").GetComponent<TextMeshProUGUI>();
         
         obstacles.AddRange(pipes);
         foreach (GameObject pipe in obstacles)
@@ -21,6 +21,7 @@ public class Obstacle : MonoBehaviour
             pipe.transform.position = new Vector2(pipe.transform.position.x, Random.Range(-2f, 2));
             pipeScored[pipe] = false;
         }
+        
     }
 
     // Update is called once per frame
@@ -39,12 +40,11 @@ public class Obstacle : MonoBehaviour
             }
             if (pipe.transform.position.x > 0 && !pipeScored[pipe])
             {
-                score++;
+                GameManager.Instance.AddScore();
                 pipeScored[pipe] = true;
                 int noise = Random.Range(1, 4);
                 FindFirstObjectByType<FlappyAudio>().Play("Score" + noise);
             }
         }
-        scoreText.text = score.ToString();
     }
 }

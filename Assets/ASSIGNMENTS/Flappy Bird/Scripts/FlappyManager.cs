@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using System.Collections.Generic;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,9 +11,17 @@ public class GameManager : MonoBehaviour
     public GameObject gameOver;
     public GameObject Pause;
     public GameObject Resume;
-
+    public GameObject StartMenu;
     public bool isGameOver;
 
+    public TextMeshProUGUI ScoreText;
+    public TextMeshProUGUI HighscoreText;
+
+    private int score;
+    private int highscore;
+    
+    List<GameObject> obstacles = new List<GameObject>();
+    
     private void Awake()
     {
         // SINGLEton
@@ -22,30 +32,60 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
-        Time.timeScale = 1f;
+        highscore = PlayerPrefs.GetInt("Highscore");
+        ScoreText.text = score.ToString();
+        HighscoreText.text = "Best: " + highscore.ToString();
     }
 
     private void Start()
     {
         gameOver.SetActive(false);
-        FindFirstObjectByType<FlappyAudio>().Play("Input");
+        Time.timeScale = 1f;
+        StartMenu.SetActive(false);
     }
-    
+
+    public void AddScore()
+    {
+        score++;
+
+        if (score > highscore)
+        {
+            highscore = score;
+            PlayerPrefs.SetInt("Highscore", highscore);
+            PlayerPrefs.Save();
+        }
+        ScoreText.text = score.ToString();
+        HighscoreText.text = "Best: " + highscore.ToString();
+    }
     public void GameOver()
     {
         if (isGameOver) return;
         
         FindFirstObjectByType<FlappyAudio>().Play("Death");
-        
         isGameOver = true;
         gameOver.SetActive(true);
+        
+        GameObject[] pipes = GameObject.FindGameObjectsWithTag("Obstacle");
+        obstacles.AddRange(pipes);
+
+        float timer = 15f;
+
+        while (timer > 0f)
+        {
+            timer -= Time.deltaTime;
+        }
+        foreach (GameObject pipe in obstacles)
+        {
+            pipe.transform.Translate(Vector2.left * 3 * Time.deltaTime);
+        }
+        
         Time.timeScale = 0f;
     }
     
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); //Scenemanager doing a lot of heavy lifting
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         FindFirstObjectByType<FlappyAudio>().Play("Input");
     }
 
