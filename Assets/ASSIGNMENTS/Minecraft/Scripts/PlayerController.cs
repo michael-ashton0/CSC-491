@@ -15,7 +15,10 @@ public class PlayerController3D : MonoBehaviour
     private float yVelocity;
     private float xRotation = 0f;
     private float yRotation = 0f;
-
+    
+    public float maxDistance = 10f;
+    public GameObject cubePrefab;
+    
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -31,8 +34,22 @@ public class PlayerController3D : MonoBehaviour
     {
         HandleAiming();
         HandleMovement();
-    }
+        if (Input.GetMouseButtonDown(0))
+        {
+            TryDestroyBlock();
+        }
 
+        if (Input.GetMouseButtonDown(1))
+        {
+            TryPlaceBlock();
+        }
+    }
+    
+    Ray GetCenterRay()
+    {
+        return cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+    }
+    
     void HandleMovement()
     {
         float x = Input.GetAxis("Horizontal");
@@ -67,4 +84,27 @@ public class PlayerController3D : MonoBehaviour
         cam.transform.localRotation = Quaternion.Euler(xRotation, -yRotation, 0f);
         playerBody.Rotate(Vector3.up * mouseX);
     }
+    
+    void TryDestroyBlock()
+    {
+        Ray ray = GetCenterRay();
+
+        if (Physics.Raycast(ray, out RaycastHit hit, maxDistance) & gameObject.CompareTag("Cube"))
+        {
+            Destroy(hit.collider.gameObject);
+        }
+    }
+
+    void TryPlaceBlock()
+    {
+        Ray ray = GetCenterRay();
+
+        if (Physics.Raycast(ray, out RaycastHit hit, maxDistance) & gameObject.CompareTag("Cube"))
+        {
+            Vector3 placePos = hit.collider.transform.position + hit.normal;
+
+            Instantiate(cubePrefab, placePos, Quaternion.identity);
+        }
+    }
 }
+
