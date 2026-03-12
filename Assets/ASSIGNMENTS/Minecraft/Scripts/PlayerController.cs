@@ -16,7 +16,7 @@ public class PlayerController3D : MonoBehaviour
     private float xRotation = 0f;
     private float yRotation = 0f;
     
-    public float maxDistance = 10f;
+    public float maxDistance = 2f;
     public GameObject cubePrefab;
     
     void Start()
@@ -32,6 +32,9 @@ public class PlayerController3D : MonoBehaviour
 
     void Update()
     {
+        Ray ray = GetCenterRay();
+        Debug.DrawRay(ray.origin, ray.direction * maxDistance, Color.red);
+        
         HandleAiming();
         HandleMovement();
         if (Input.GetMouseButtonDown(0))
@@ -47,7 +50,7 @@ public class PlayerController3D : MonoBehaviour
     
     Ray GetCenterRay()
     {
-        return cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        return cam.ViewportPointToRay(new Vector3(0f, 0.5f, 0.5f));
     }
     
     void HandleMovement()
@@ -88,7 +91,6 @@ public class PlayerController3D : MonoBehaviour
     void TryDestroyBlock()
     {
         Ray ray = GetCenterRay();
-
         if (Physics.Raycast(ray, out RaycastHit hit, maxDistance) & gameObject.CompareTag("Cube"))
         {
             Destroy(hit.collider.gameObject);
@@ -107,4 +109,3 @@ public class PlayerController3D : MonoBehaviour
         }
     }
 }
-
