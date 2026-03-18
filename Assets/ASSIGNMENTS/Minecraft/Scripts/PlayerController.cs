@@ -50,7 +50,7 @@ public class PlayerController3D : MonoBehaviour
     
     Ray GetCenterRay()
     {
-        return cam.ViewportPointToRay(new Vector3(0f, 0.5f, 0.5f));
+        return cam.ViewportPointToRay(new Vector3(0f, 0f, 0f));
     }
     
     void HandleMovement()
