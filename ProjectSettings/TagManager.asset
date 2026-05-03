@@ -10,11 +10,15 @@ TagManager:
   - Text
   - Wave
   - Obstacle
+  - Manager
+  - UI
+  - Score
+  - Cube
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Interactable
   - Water
   - UI
   - 

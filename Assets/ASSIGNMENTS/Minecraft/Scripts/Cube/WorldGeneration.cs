@@ -7,10 +7,18 @@ public class WorldGeneration : MonoBehaviour
 {
     public GameObject grassPrefab;
     public GameObject stonePrefab;
-    public GameObject coalPrefab;
     public GameObject dirtPrefab;
     public GameObject logPrefab;
     public GameObject leafPrefab;
+    
+    public GameObject coalPrefab;
+    public GameObject ironPrefab;
+    public GameObject diamondPrefab;
+
+    public float oreChance = 1f;
+    public float coalChance = 0.33f;
+    public float ironChance = 0.33f;
+    public float diamondChance = 0.33f;
     
     public int width = 5;
     public int height = 5;
@@ -21,12 +29,24 @@ public class WorldGeneration : MonoBehaviour
     
     public int terrain_height_scaler = 3;
     public int tree_height_scaler = 5;
-    
-    private List<Vector3> treePositions = new List<Vector3>();
+
+    private List<Vector3> treePositions;
+    private Dictionary<Vector3, GameObject> stoneBlocks;
     
     void Start()
     {
+        treePositions = new List<Vector3>();
+        stoneBlocks = new Dictionary<Vector3, GameObject>();
+        
         SpawnTopLayer();
+
+        float oreRoll = Random.Range(0f, 1f);
+
+        if (oreRoll <= oreChance)
+        {
+            float typeOfOreRoll = Random.Range(0f, 1f);
+            SpawnOre(typeOfOreRoll);
+        }
     }
 
     void SpawnTopLayer()
@@ -73,7 +93,9 @@ public class WorldGeneration : MonoBehaviour
         for (int i = 0; i < layerSize; i++)
         {
             newSpawn += Vector3.down;
-            Instantiate(stonePrefab, newSpawn,  Quaternion.identity, transform);
+
+            GameObject stone = Instantiate(stonePrefab, newSpawn, Quaternion.identity, transform);
+            stoneBlocks[newSpawn] = stone;
         }
     }
 
@@ -128,4 +150,72 @@ public class WorldGeneration : MonoBehaviour
 
         return true;
     }
+    
+    void SpawnOreVein(Vector3 startPos, int veinSize)
+    {
+        Vector3 current = startPos;
+
+        for (int i = 0; i < veinSize; i++)
+        {
+            if (stoneBlocks.ContainsKey(current))
+            {
+                Destroy(stoneBlocks[current]);
+
+                Instantiate(coalPrefab, current, Quaternion.identity, transform);
+
+                stoneBlocks.Remove(current);
+            }
+            
+            int dir = Random.Range(0, 6);
+
+            switch (dir)
+            {
+                case 0: current += Vector3.right; break;
+                case 1: current += Vector3.left; break;
+                case 2: current += Vector3.forward; break;
+                case 3: current += Vector3.back; break;
+                case 4: current += Vector3.up; break;
+                case 5: current += Vector3.down; break;
+            }
+        }
+    }
+    
+    void SpawnOre(float roll)
+    {
+        GameObject oreType;
+        int veinSize;
+
+        if (roll < coalChance)
+        {
+            oreType = coalPrefab;
+            veinSize = Random.Range(8, 12);
+        }
+        else if (roll < coalChance + ironChance)
+        {
+            oreType = ironPrefab;
+            veinSize = Random.Range(6, 8);
+        }
+        else
+        {
+            oreType = diamondPrefab;
+            veinSize = Random.Range(4, 6);
+        }
+        
+        int numVeins = 10;
+        
+        List<Vector3> stonePositions = new List<Vector3>(stoneBlocks.Keys);
+
+        for (int i = 0; i < numVeins; i++)
+        {
+            if (stonePositions.Count == 0)
+            {
+                return;
+            }
+
+            Vector3 start = stonePositions[Random.Range(0, stonePositions.Count)];
+
+            SpawnOreVein(start, veinSize);
+        }
+    }
+    
 }
